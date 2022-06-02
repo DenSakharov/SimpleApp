@@ -12,7 +12,15 @@
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <DataGrid  Grid.Row="0"  Grid.Column="0" x:Name="grid"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <DataGrid  
+                IsReadOnly="True"
+                Grid.Row="0"  Grid.Column="0" x:Name="grid"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <DataGrid.ItemContainerStyle>
+                    <Style TargetType="DataGridRow">
+                        <EventSetter Event="MouseUp" Handler="Row_Click"/>
+                    </Style>
+                </DataGrid.ItemContainerStyle>
+            </DataGrid>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions >
