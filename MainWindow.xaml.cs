@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,6 +24,7 @@ namespace SimpleApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<FileInformation> fileAtributes = new List<FileInformation>();
         public MainWindow()
         {
             InitializeComponent();
@@ -30,7 +34,7 @@ namespace SimpleApp
             var path = tbPath.Text;
             var lstFiles = Directory.GetFiles(path);
             var lstDirs = Directory.GetDirectories(path);
-            List<FileInformation> fileAtributes = new List<FileInformation>();
+            fileAtributes = new List<FileInformation>();
 
             if (tbPath.Text.LastIndexOf(@"\") != tbPath.Text.Length - 1) fileAtributes.Add(new FileInformation("..", "", "Dir", "-"));
 
@@ -72,23 +76,35 @@ namespace SimpleApp
         }
 
         public long GetSizeInDir(string path)
-        { 
+        {
+       
             long size = 0;
-                var lstFiles = Directory.GetFiles(path);
-                var lstDirs = Directory.GetDirectories(path);
-                List<FileInformation> fileAtributes = new List<FileInformation>();
+            var lst= Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+            foreach (string name in lst)
+            {
+                try
+                {
+                    size += new FileInfo(name).Length;
+                }
+                catch (Exception e) {
+                    int a = 0;
+                }
+            }
+            //                var lstFiles = Directory.GetFiles(path);
+            //                var lstDirs = Directory.GetDirectories(path);
+            //                List<FileInformation> fileAtributes = new List<FileInformation>();
 
-                foreach (var name in lstDirs)
-                {
-                    DirectoryInfo dirInfo = new DirectoryInfo(name);
-                size += GetSizeInDir(name);
-//                fileAtributes.Add(new FileInformation(name, dirInfo.LastWriteTime.ToString("dd-MM-yyyy HH:mm:ss"), "Dir", "-"));
-                }
-                foreach (var name in lstFiles)
-                {
-                size += new FileInfo(name).Length;
- //                   fileAtributes.Add(new FileInformation(name, File.GetLastWriteTime(name).ToString("dd-MM-yyyy HH:mm:ss"), name.Substring(name.LastIndexOf(".") + 1), new FileInfo(name).Length.ToString()));
-                }
+            //                foreach (var name in lstDirs)
+            //                {
+            //                    DirectoryInfo dirInfo = new DirectoryInfo(name);
+            //                size += GetSizeInDir(name);
+            ////                fileAtributes.Add(new FileInformation(name, dirInfo.LastWriteTime.ToString("dd-MM-yyyy HH:mm:ss"), "Dir", "-"));
+            //                }
+            //                foreach (var name in lstFiles)
+            //                {
+            //                size += new FileInfo(name).Length;
+            // //                   fileAtributes.Add(new FileInformation(name, File.GetLastWriteTime(name).ToString("dd-MM-yyyy HH:mm:ss"), name.Substring(name.LastIndexOf(".") + 1), new FileInfo(name).Length.ToString()));
+            //                }
             return size;
             }
 
@@ -111,6 +127,37 @@ namespace SimpleApp
             }
         }
 
+        private void Button_Click_to_JSON(object sender, RoutedEventArgs e)
+        {
+            string json = @"[";
+            foreach(var item in fileAtributes)
+            {
+                if (json.Length > 1) json += ",";
+                json += @"{""name"":""" + item.name + @""",""dateUpdate"":""" + item.dateUpdate + @""",""tip"":""" + item.Tip + @""",""size"":""" + item.size + @"""}";
+            }
+            json += "]";
+            StreamWriter SW = new StreamWriter(new FileStream("FileManager.json", FileMode.Create, FileAccess.Write));
+            SW.Write(json);
+            SW.Close();
+        }
+
+        private void Button_Click_from_JSON(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                using (StreamReader r = new StreamReader("FileManager.json"))
+                {
+                    string json = r.ReadToEnd();
+                    List<FileInformation> items = JsonConvert.DeserializeObject<List<FileInformation>>(json);
+                    grid.ItemsSource = items;
+                    grid.Items.Refresh();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 
 }

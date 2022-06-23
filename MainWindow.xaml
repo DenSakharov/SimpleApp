@@ -26,11 +26,15 @@
             <Grid.ColumnDefinitions >
                 <ColumnDefinition Width="70" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
             <Label  Grid.Row="1"  Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10">PATH :</Label>
             <TextBox  x:Name="tbPath" Grid.Row="1"  Grid.Column="1" Height ="24"   MaxLength="200" HorizontalAlignment="Stretch"  />
             <Button Click="Button_Click" Height="20" Width="100" Margin="5" Grid.Row="1"  Grid.Column="2" Name="btn" Content="Применить"/>
+            <Button Click="Button_Click_to_JSON" Height="20" Width="100"  Grid.Row="1"  Grid.Column="3" Name="btnToJSON" Content="Сохранить в JSON"/>
+            <Button Click="Button_Click_from_JSON" Height="20" Width="120"  Grid.Row="1"  Grid.Column="4" Name="btnFromJSON" Content="Загрузить из JSON"/>
         </Grid>
     </Grid>
 </Window>
